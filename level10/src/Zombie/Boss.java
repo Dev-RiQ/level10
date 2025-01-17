@@ -30,4 +30,21 @@ public class Boss extends Zombie {
 		return power;
 	}
 	
+	@Override
+	protected void setDamage(int damage) {
+		super.setDamage(damage);
+		if(shield > 0 && shield < damage) {
+			setHp(getMAX_HP() - damage + shield);
+			shield = 0;
+		}else if(shield > 0) {
+			setHp(getMAX_HP());
+			shield -= damage;
+		}
+	}
+
+	@Override
+	public String toString() {
+		return String.format("%s [ %d / %d ] (쉴드 [ %d / %d ])", getName(), getHp(), getMAX_HP(),shield,MAX_SHIELD);
+	}
+	
 }

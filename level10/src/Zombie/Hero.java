@@ -21,10 +21,6 @@ public class Hero extends Unit {
 	}
 
 	public void drinkPotion() {
-		if (potion == 0) {
-			System.out.println("사용할 수 있는 포션이 없습니다.");
-			return;
-		}
 		potion--;
 		System.out.println("포션을 사용하여 100의 HP를 회복합니다.");
 		int healHp = (getMAX_HP() - getHp()) < 100 ? getMAX_HP() : (getHp() + 100);

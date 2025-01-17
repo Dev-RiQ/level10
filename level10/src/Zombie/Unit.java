@@ -62,11 +62,12 @@ public abstract class Unit {
 	protected void setRd(Random rd) {
 		this.rd = rd;
 	}
-
+	
 	protected void setDamage(int damage) {
-		hp -= damage;
-		System.out.println(name+" - " + damage +"만큼 피격 !");
 		this.damage = damage;
+		System.out.println(name+" - " + damage +"만큼 피격 !");
+		if(hp < damage) damage = hp;
+		hp -= damage;
 	}
 
 	public Unit(String name, int pos, int hp, int power) {

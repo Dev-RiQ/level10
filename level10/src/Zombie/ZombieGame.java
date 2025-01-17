@@ -72,56 +72,68 @@ public class ZombieGame {
 		return false;
 	}
 	
-	private void fight(Scanner sc) {
-		Unit unit = uList.get(0);
-		while(true) {
-			System.out.println(hero + " vs " + unit);
-			int sel = getValue("공격하기(1), 포션 마시기(2)- 잔여 "+hero.getPotion()+"개 >> ", 1, 2, sc);
-			System.out.println("==================");
-			if(sel == 1) {
-				unit.setDamage(hero.attack());
-			}else
-				hero.drinkPotion();
-			System.out.println(hero + " vs " + unit);
-			if(hasDead(unit))
-				break;
-			System.out.println("==================");
-			hero.setDamage(unit.attack());
-			System.out.println(hero + " vs " + unit);
-			if(hasDead())
-				break;
-			System.out.println("==================");
-			if(unit.getName().equals("좀비")) {
-				((Zombie) unit).selfHeal();
-			}
-		}
+	private void printUnits() {
+		System.out.println(hero + " vs " + uList.get(0));
+		System.out.println("==================");
 	}
 	
-	private boolean hasDead() {
-		if(hero.getHp() > 0)
-			return false;
-		System.out.println("임무를 완수하지 못한채 눈을 감아버린 히어로..");
+	private boolean validAction(int sel) {
+		System.out.println("[ Hero Turn !!! ]");
+		if(sel == 1)
+			uList.get(0).setDamage(hero.attack());
+		else {
+			if(hero.getPotion() == 0) {
+				System.out.println("사용할 수 있는 포션이 없습니다.");
+				return false;
+			}
+			hero.drinkPotion();
+		}
+		printUnits();
 		return true;
 	}
 	
-	private boolean hasDead(Unit unit) {
-		if(unit.getHp() <= 0 && uList.size() != 1) {
-			System.out.println("좀비 소탕 완료 !!");
-			uList.remove(0);
-			return true;
-		}else if(unit.getHp() <= 0) {
-			System.out.println("보스 소탕 완료 !!");
-			uList.remove(0);
-			return true;
+	private void unitAttack() {
+		System.out.println("[ "+uList.get(0).getName()+" Turn !!! ]");
+		hero.setDamage(uList.get(0).attack());
+		printUnits();
+	}
+	
+	private void zombieHeal() {
+		if(uList.get(0).getName().equals("좀비"))
+			((Zombie) uList.get(0)).selfHeal();
+		printUnits();
+	}
+	
+	private void fight(Scanner sc) {
+		while(true) {
+			int sel = getValue("공격하기(1), 포션 마시기(2)- 잔여 "+hero.getPotion()+"개 >> ", 1, 2, sc);
+			if(!validAction(sel)) continue;;
+			if(monsterDead()) break;
+			unitAttack();
+			if(isHeroDead()) break;
+			if(uList.size() != 1) zombieHeal();
 		}
-		return false;
+	}
+	
+	private boolean isHeroDead() {
+		return hero.getHp() > 0? false : true;
+	}
+	
+	private boolean monsterDead() {
+		if(uList.get(0).getHp() > 0)
+			return false;
+		System.out.println(uList.get(0).getName()+" 소탕 완료 !!");
+		uList.remove(0);
+		return true;
 	}
 	
 	private void gameEnd(boolean isEnd) {
-		if(hero.getPos() == MAP_SIZE || isEnd)
+		if(!isHeroDead() || hero.getPos() == MAP_SIZE || isEnd)
 			System.out.println("게임 클리어!");
-		else
+		else {
+			System.out.println("[Bad Ending] 임무를 완수하지 못한채 눈을 감아버린 히어로..");
 			System.out.println("게임 오버..");
+		}
 	}
 	
 	private boolean isEnd(boolean isOver) {
@@ -145,9 +157,9 @@ public class ZombieGame {
 					fight(sc);
 			}else
 				isEnd = isEnd(true);
-			System.out.println("=================================");
 			if(uList.size() == 0 || hero.getHp() <= 0)
 				break;
+			System.out.println("=================================");
 		}
 		gameEnd(isEnd);
 	}
