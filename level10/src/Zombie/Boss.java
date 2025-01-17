@@ -12,39 +12,56 @@ public class Boss extends Zombie {
 
 	private final int MAX_SHIELD;
 	private int shield;
-	
-	public Boss(String name, int pos, int hp, int power,int shield) {
+
+	public Boss(String name, int pos, int hp, int power, int shield) {
 		super(name, pos, hp, power);
 		this.shield = shield;
 		MAX_SHIELD = shield;
+		setHasShield(true);
+	}
+
+	protected int getShield() {
+		return shield;
 	}
 
 	@Override
 	protected int attack() {
 		Random rd = new Random();
 		int num = rd.nextInt(4);
-		int power = getPower();
-		if(num == 0)
-			power = power * 2;
-		System.out.println(getName() +" - "+ getPower() + "의 데미지로 공격 !");
-		return power;
+		if (num == 0)
+			return super.criticalAttack();
+		return super.attack();
 	}
 	
+	/** 실드가 데미지보다 많을 때 */
+	private void enoughShield(int damage) {
+		super.setDamage(shield);
+		setHp(getMAX_HP());
+		setHasShield(false);
+		super.setDamage(damage - shield);
+		shield = 0;
+	}
+	
+	/** 실드보다 데미지가 많을 때 */
+	private void notEnoughShield(int damage) {
+		super.setDamage(damage);
+		setHp(getMAX_HP());
+		shield -= damage;
+	}
+
 	@Override
 	protected void setDamage(int damage) {
-		super.setDamage(damage);
-		if(shield > 0 && shield < damage) {
-			setHp(getMAX_HP() - damage + shield);
-			shield = 0;
-		}else if(shield > 0) {
-			setHp(getMAX_HP());
-			shield -= damage;
-		}
+		if (shield > 0 && damage > shield)
+			enoughShield(damage);
+		else if (shield > 0)
+			notEnoughShield(damage);
+		else
+			super.setDamage(damage);
 	}
 
 	@Override
 	public String toString() {
-		return String.format("%s [ %d / %d ] (쉴드 [ %d / %d ])", getName(), getHp(), getMAX_HP(),shield,MAX_SHIELD);
+		return super.toString() + String.format(" (쉴드 [ %d / %d ])", shield, MAX_SHIELD);
 	}
-	
+
 }

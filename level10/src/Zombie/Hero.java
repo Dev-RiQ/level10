@@ -1,5 +1,7 @@
 package Zombie;
 
+import java.util.Random;
+
 //보스인지 아닌지 구분해서 공격 
 
 //히어로는 체력 포션으로 100 체력 회복할 수 있고 체력 포션이 없으면 체력 회복이 안된다 
@@ -20,6 +22,7 @@ public class Hero extends Unit {
 		this.potion = potion;
 	}
 
+	/** 포션 사용 */
 	public void drinkPotion() {
 		potion--;
 		System.out.println("포션을 사용하여 100의 HP를 회복합니다.");
@@ -29,8 +32,12 @@ public class Hero extends Unit {
 
 	@Override
 	protected int attack() {
-		System.out.println(getName() +" - "+ getPower() + "의 데미지로 공격 !");
-		return getPower();
+		// TODO: 나중에 보스 공격력, 방어율무시 등 추가 예정
+		Random rd = new Random();
+		int num = rd.nextInt(4);
+		if (num == 0)
+			return super.criticalAttack();
+		return super.attack();
 	}
 
 }

@@ -8,18 +8,16 @@ public class Zombie extends Unit {
 		super(name, pos, hp, power);
 	}
 
-	public void selfHeal() {
+	/** 좀비 턴당 회복 로직 */
+	public void selfHeal(boolean isCritical) {
 		int hp = getHp();
-		int heal = getDamage() / 2;
+		int heal = getDamage() / (isCritical ? 4 : 2);
 		int healHp = (hp + heal) < getMAX_HP() ? (hp + heal) : getMAX_HP();
 		setHp(healHp);
-		System.out.println("턴이 변경되며 좀비가 최근 피격 데미지의 50%를 회복합니다.");
-	}
-
-	@Override
-	protected int attack() {
-		System.out.println(getName() +" - "+ getPower() + "의 데미지로 공격 !");
-		return getPower();
+		System.out.println("턴이 변경되며 " + getName() + "가 직전 감소 HP의 50%를 회복합니다.");
+		if (isCritical)
+			System.out.println("크리티컬 히트를 입혀 회복률을 50% 감소시킵니다. (최종 25% 회복)");
+		System.out.println(getName() + " => HP " + heal + "만큼 회복 !");
 	}
 
 }
