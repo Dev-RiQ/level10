@@ -14,19 +14,53 @@ interface Damageable2 {
 }
 
 class Unit2 implements Damageable2 {
-	protected static int num = 1;
-	protected String name;
-	protected final int MAX_HP;
-	protected int hp;
+	private static int num = 1;
+	private String name;
+	private final int MAX_HP;
+	private int hp;
 
 	protected Unit2(int hp) {
 		MAX_HP = hp;
 		this.hp = MAX_HP;
 	}
+	
+	protected static int getNum() {
+		return num;
+	}
+
+	protected String getName() {
+		return name;
+	}
+
+	protected void setHp(int hp) {
+		this.hp = hp;
+	}
+
+	protected int getMAX_HP() {
+		return MAX_HP;
+	}
+
+	protected int getHp() {
+		return hp;
+	}
+
+	protected static void setNum(int num) {
+		Unit2.num = num;
+	}
+
+	protected void setName(String name) {
+		this.name = name;
+	}
+
 
 	@Override
 	public void damage(int damage) {
 		hp -= damage;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("%s [ %d / %d ]", name, hp, MAX_HP);
 	}
 }
 
@@ -52,10 +86,6 @@ class Tank2 extends GroundUnit2 implements Repairable2 {
 		super(HP);
 	}
 
-	@Override
-	public String toString() {
-		return String.format("%s (%d/ %d )", name, hp, MAX_HP);
-	}
 
 }
 
@@ -65,11 +95,6 @@ class Soldier2 extends GroundUnit2 implements Healable2 {
 
 	public Soldier2() {
 		super(HP);
-	}
-
-	@Override
-	public String toString() {
-		return String.format("%s (%d/ %d )", name, hp, MAX_HP);
 	}
 
 }
@@ -82,11 +107,6 @@ class Aircraft2 extends AirUnit2 implements Repairable2 {
 		super(HP);
 	}
 
-	@Override
-	public String toString() {
-		return String.format("%s (%d/ %d )", name, hp, MAX_HP);
-	}
-
 }
 
 class DropShip2 extends AirUnit2 implements Repairable2 {
@@ -95,11 +115,6 @@ class DropShip2 extends AirUnit2 implements Repairable2 {
 
 	public DropShip2() {
 		super(HP);
-	}
-
-	@Override
-	public String toString() {
-		return String.format("%s (%d/ %d )", name, hp, MAX_HP);
 	}
 
 }
@@ -116,17 +131,12 @@ class SCV2 extends GroundUnit2 implements Repairable2 {
 		Unit2 unit = (Unit2) repairable; // 다형성
 
 		for (int i = 0; i < max; i++) {
-			unit.hp++;
-			if (unit.hp == unit.MAX_HP)
+			unit.setHp(unit.getHp() + 1);
+			if (unit.getHp() == unit.getMAX_HP())
 				break;
 		}
 		System.out.println(" [hp +" + max + "] " + unit + "수리 완료!!");
 
-	}
-
-	@Override
-	public String toString() {
-		return String.format("%s (%d/ %d )", name, hp, MAX_HP);
 	}
 }
 
@@ -153,21 +163,26 @@ class UnitDAO2 {
 
 	private void setuList() {
 		Random rd = new Random();
+		String[] unitNames = {"Tank2","Soldier2","Aircraft2","DropShip2","SCV2"};
 		for (int i = 0; i < 10; i++) {
-			addNewList(rd);
-			Unit2 unit = uList.get(i);
-			unit.name = unit.getClass().getSimpleName() + (Unit2.num++);
+			int idx = rd.nextInt(5);
+			String unitName = unitNames[idx];
+			setNewInstance(unitName);
+			uList.get(i).setName(unitName.replace("2", " ") + Unit2.getNum());
+			Unit2.setNum(Unit2.getNum()+1);
 		}
 	}
 	
-	private void addNewList(Random rd) {
-		switch (rd.nextInt(5)) {
-		case 0: uList.add(new Tank2()); break;
-		case 1: uList.add(new Soldier2()); break;
-		case 2: uList.add(new Aircraft2()); break;
-		case 3: uList.add(new DropShip2()); break;
-		case 4: uList.add(new SCV2()); break;
+	private void setNewInstance(String unitName) {
+		try {
+			addUnit(unitName);
+		} catch (Exception e) {
 		}
+	}
+	
+	private void addUnit(String unit) throws Exception{
+		String packagetName = _02스타크래프트2.class.getPackageName() + ".";
+		uList.add((Unit2) Class.forName(packagetName + unit).getDeclaredConstructor().newInstance());
 	}
 }
 
@@ -211,8 +226,8 @@ class Starcraft2 {
 
 	private void printResult(Unit2[] units, int idx) {
 		System.out.println("                            ▼ ▼");
-		System.out.println("                        " + units[1] + (units[1].hp <= 0 ? " (사망)" : ""));
-		if (units[1].hp <= 0)
+		System.out.println("                        " + units[1] + (units[1].getHp() <= 0 ? " (사망)" : ""));
+		if (units[1].getHp() <= 0)
 			udao.removeuList(idx);
 		System.out.println("남은 유닛 수 : " + udao.getuListSize());
 		System.out.println("------------------");
