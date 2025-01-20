@@ -22,6 +22,6 @@ public class MemberComp implements Comparator<Member>{
 		case PW: result = o1.getPw().compareTo(o2.getPw()); break; 
 		case NAME: result = o1.getName().compareTo(o2.getName()); break; 
 		}
-		return result * (sortDir == sortDir.ASC ? 1 : -1);
+		return result * (sortDir == SortDir.ASC ? 1 : -1);
 	}
 }
