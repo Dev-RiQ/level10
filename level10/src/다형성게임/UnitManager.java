@@ -8,9 +8,9 @@ import java.util.Random;
 // 몬스터 랜덤 소환 (HP : 100~200, power : 10~20
 public class UnitManager {
 
-	Random rd;
-	List<Unit> mList;
-	List<Player> pList;
+	private Random rd;
+	private List<Unit> mList;
+	private List<Player> pList;
 
 	private UnitManager() {
 		rd = new Random();
@@ -108,8 +108,6 @@ public class UnitManager {
 		int rd_index = rd.nextInt(mList.size());
 		Unit target = mList.get(rd_index);
 		setDamage(mList, player, target, rd_index);
-		if (target.curhp == 0)
-			mList.remove(rd_index);
 	}
 
 	/** hp 깎고 데미지 및 처치 여부 출력 */
@@ -120,7 +118,7 @@ public class UnitManager {
 			target.curhp -= unit.power;
 			printDamage(unit.name, target.name, unit.power);
 		}
-		checkDead(target);
+		checkDead(target,idx);
 	}
 
 	/** 데미지 적용 메세지 */
@@ -134,10 +132,11 @@ public class UnitManager {
 	}
 
 	/** 처치 여부 판단, 처치 시 출력 */
-	private void checkDead(Unit target) {
+	private void checkDead(Unit target, int idx) {
 		if (target.curhp <= 0) {
 			System.out.println("[" + target.name + "] 를 처치했습니다.");
 			target.curhp = 0;
+			mList.remove(idx);
 		}
 	}
 
@@ -169,13 +168,13 @@ public class UnitManager {
 	@SuppressWarnings("unchecked")
 	private void setArea(List<?> list, Unit unit, Unit target) {
 		printDamage(unit.name, "모두", unit.power / 2);
-		List<Unit> temp = (List<Unit>) list;
+		List<Unit> temp = (List<Unit>) list; // @SuppressWarnings("unchecked") => list(Unit or Player) 무조건 Unit에 캐스팅 가능
 		for (int i = 0; i < list.size(); i++) {
 			temp.get(i).curhp -= unit.power / 2;
 			if (!target.equals(temp.get(i)))
-				checkDead(temp.get(i));
+				checkDead(temp.get(i),i);
 		}
-		unit.isStun = false;
+		unit.isArea = false;
 	}
 
 	/** 힐 스킬 사용 시 적용 */

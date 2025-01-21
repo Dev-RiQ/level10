@@ -2,16 +2,16 @@ package 다형성게임;
 
 public abstract class Unit {
 
-	int curhp;
-	int maxhp;
-	int power;
-	String name;
-	String state = "노말";
-	boolean hasStun;
-	boolean isStun;
-	boolean isArea;
-	boolean isCritical;
-	boolean isHeal;
+	protected int curhp;
+	protected int maxhp;
+	protected int power;
+	protected String name;
+	protected String state = "노말";
+	protected boolean hasStun;
+	protected boolean isStun;
+	protected boolean isArea;
+	protected boolean isCritical;
+	protected boolean isHeal;
 
 	Unit(String name) {
 		this.name = name;

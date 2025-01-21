@@ -5,9 +5,13 @@ import java.util.Map;
 
 public class GameManager {
 
-	Stage.StageName curStage;
-	Stage.StageName nextStage;
-	Map<Stage.StageName, Stage> stageList;
+	private Stage.StageName curStage;
+	private Stage.StageName nextStage;
+	private Map<Stage.StageName, Stage> stageList;
+
+	public void setNextStage(Stage.StageName nextStage) {
+		this.nextStage = nextStage;
+	}
 
 	private static GameManager instance;
 

@@ -1,7 +1,7 @@
 package 다형성게임;
 
 public abstract class Stage {
-	enum StageName { TITLE, LOBBY, BATTLE, NONE }
+	enum StageName { TITLE, LOBBY, BATTLE, NONE}
 
 	/** 스테이지 진행 */
 	abstract boolean update();

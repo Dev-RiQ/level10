@@ -8,7 +8,7 @@ public class StageTitle extends Stage {
 		System.out.println("==== TEXT RPG ====");
 		String start = Utils.getInstance().getValue("[시작] 을 입력하세요 >> ");
 		if (start.equals("시작"))
-			GameManager.getInstance().nextStage = StageName.LOBBY;
+			GameManager.getInstance().setNextStage(StageName.LOBBY);
 		else
 			Utils.getInstance().showErrorMsg("시작을 정확히 입력하세요.");
 		return false;
