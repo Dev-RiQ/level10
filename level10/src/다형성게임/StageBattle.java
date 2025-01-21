@@ -21,7 +21,7 @@ public class StageBattle extends Stage {
 
 	@Override
 	public void init() {
-		UnitManager.getInstance().setmList(14);
+		UnitManager.getInstance().setmList(10);
 
 	}
 

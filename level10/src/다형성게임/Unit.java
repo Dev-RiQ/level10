@@ -7,7 +7,12 @@ public abstract class Unit {
 	int power;
 	String name;
 	String state = "노말";
-	
+	boolean hasStun;
+	boolean isStun;
+	boolean isArea;
+	boolean isCritical;
+	boolean isHeal;
+
 	Unit(String name) {
 		this.name = name;
 	}
@@ -20,9 +25,9 @@ public abstract class Unit {
 	}
 
 	abstract void skill();
-	
+
 	void attack() {
-		
+
 	}
 
 	public void init(int hp, int power) {
@@ -33,7 +38,7 @@ public abstract class Unit {
 
 	@Override
 	public String toString() {
-		return String.format("%s \t [ %d / %d ] [ power : %d ]", name,curhp,maxhp,power);
+		return String.format("%s \t [ %d / %d ] [ power : %d ]", name, curhp, maxhp, power);
 	}
-	
+
 }

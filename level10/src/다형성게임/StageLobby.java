@@ -1,4 +1,5 @@
 package 다형성게임;
+
 // 1. 전투 2.종료 (전투 -> Battle)
 public class StageLobby extends Stage {
 
@@ -15,7 +16,7 @@ public class StageLobby extends Stage {
 
 	@Override
 	public void init() {
-		
+
 	}
 
 }

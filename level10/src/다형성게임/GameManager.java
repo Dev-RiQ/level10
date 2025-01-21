@@ -58,7 +58,8 @@ public class GameManager {
 		boolean run = true;
 		while (true) {
 			run = changeStage();
-			if (run == false) break;
+			if (run == false)
+				break;
 		}
 		System.out.println("게임 종료");
 	}

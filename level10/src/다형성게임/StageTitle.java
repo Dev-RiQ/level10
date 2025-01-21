@@ -1,4 +1,5 @@
 package 다형성게임;
+
 // 시작 -> LOBBY
 public class StageTitle extends Stage {
 
@@ -10,12 +11,12 @@ public class StageTitle extends Stage {
 			GameManager.getInstance().nextStage = StageName.LOBBY;
 		else
 			Utils.getInstance().showErrorMsg("시작을 정확히 입력하세요.");
- 		return false;
+		return false;
 	}
 
 	@Override
 	public void init() {
-		
+
 	}
 
 }

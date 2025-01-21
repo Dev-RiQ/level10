@@ -16,16 +16,15 @@ public class UnitManager {
 		rd = new Random();
 		mList = new ArrayList<>();
 		pList = new ArrayList<>();
-		pList.add(new Player("전사", 1000, 45));
-		pList.add(new Player("마법사", 800, 60));
-		pList.add(new Player("힐러", 500, 70));
+		pList.add(new PlayerWarrior(1000, 45));
+		pList.add(new PlayerWizard(800, 60));
+		pList.add(new PlayerHealer(500, 70));
 	}
 
 	private static UnitManager instance;
 
 	public static UnitManager getInstance() {
-		if (instance == null)
-			instance = new UnitManager();
+		if (instance == null) instance = new UnitManager();
 		return instance;
 	}
 
@@ -69,21 +68,34 @@ public class UnitManager {
 			System.out.println(u);
 	}
 
+	/** 남은 monster 수 */
 	public int getmListSize() {
 		return mList.size();
 	}
 
+	/** 남은 player 수 */
 	public int getpListSize() {
 		return pList.size();
+	}
+
+	/** 스턴 걸렸는지 체크 */
+	private boolean hasStun(Unit unit) {
+		if (unit.hasStun) {
+			System.out.println(unit.name + "  스턴 중 공격 불가 !");
+			unit.hasStun = false;
+			return true;
+		}
+		return false;
 	}
 
 	/** player 공격력 기반 monster hp 감소 */
 	public void setPlayerDamage(int idx) {
 		if (pList.size() == 0) return;
-		int rd_index = rd.nextInt(pList.size());
 		Unit monster = mList.get(idx);
+		if(hasStun(monster)) return;
+		int rd_index = rd.nextInt(pList.size());
 		Player target = pList.get(rd_index);
-		printDamage(monster, target, rd_index);
+		setDamage(pList, monster, target, rd_index);
 		if (target.curhp == 0)
 			pList.remove(rd_index);
 	}
@@ -91,21 +103,88 @@ public class UnitManager {
 	/** monster 공격력 기반 player hp 감소 */
 	public void setMonsterDamage(int idx) {
 		if (mList.size() == 0) return;
+		Player player = pList.get(idx);
+		if(hasStun(player)) return;
 		int rd_index = rd.nextInt(mList.size());
 		Unit target = mList.get(rd_index);
-		Player player = pList.get(idx);
-		printDamage(player, target, rd_index);
+		setDamage(mList, player, target, rd_index);
 		if (target.curhp == 0)
 			mList.remove(rd_index);
 	}
 
 	/** hp 깎고 데미지 및 처치 여부 출력 */
-	private void printDamage(Unit unit, Unit target, int idx) {
-		target.curhp -= unit.power;
-		System.out.println("[" + unit.name + "] 가 " + "[" + target.name + "] 에게 " + unit.power + "의 데미지를 입힙니다. ");
+	private void setDamage(List<?> list, Unit unit, Unit target, int idx) {
+		if (rd.nextInt(5) == 2)
+			setSkillPower(list, unit, target);
+		else {
+			target.curhp -= unit.power;
+			printDamage(unit.name, target.name, unit.power);
+		}
+		checkDead(target);
+	}
+
+	/** 데미지 적용 메세지 */
+	private void printDamage(String name1, String name2, int damage) {
+		System.out.println("[" + name1 + "] 가 " + "[" + name2 + "] 에게 [" + damage + "] 의 데미지를 입힙니다. ");
+	}
+
+	/** 스킬 효과 적용 메세지 */
+	private void printDamage(String name1, String name2, String skill) {
+		System.out.println("[" + name1 + "] 가 " + "[" + name2 + "] 에게 [" + skill + "] 효과를 적용힙니다. ");
+	}
+
+	/** 처치 여부 판단, 처치 시 출력 */
+	private void checkDead(Unit target) {
 		if (target.curhp <= 0) {
 			System.out.println("[" + target.name + "] 를 처치했습니다.");
 			target.curhp = 0;
 		}
 	}
+
+	/** 스킬 사용 후 적용 로직 */
+	private void setSkillPower(List<?> list, Unit unit, Unit target) {
+		unit.skill();
+		if(unit.isStun) setStun(unit, target);
+		if(unit.isCritical) setCritical(unit, target);
+		else if(unit.isArea) setArea(list, unit, target);
+		else if(unit.isHeal) setHeal(unit);
+		else printDamage(unit.name, target.name, unit.power);
+	}
+
+	/** 스턴 스킬 사용 시 적용 */
+	private void setStun(Unit unit, Unit target) {
+		target.hasStun = true;
+		printDamage(unit.name, target.name, "스턴");
+		unit.isStun = false;
+	}
+
+	/** 크리티컬 스킬 사용 시 적용 */
+	private void setCritical(Unit unit, Unit target) {
+		target.curhp -= unit.power * 2;
+		printDamage(unit.name, target.name, unit.power * 2);
+		unit.isCritical = false;
+	}
+
+	/** 광역 스킬 사용 시 적용 */
+	@SuppressWarnings("unchecked")
+	private void setArea(List<?> list, Unit unit, Unit target) {
+		printDamage(unit.name, "모두", unit.power / 2);
+		List<Unit> temp = (List<Unit>) list;
+		for (int i = 0; i < list.size(); i++) {
+			temp.get(i).curhp -= unit.power / 2;
+			if (!target.equals(temp.get(i)))
+				checkDead(temp.get(i));
+		}
+		unit.isStun = false;
+	}
+
+	/** 힐 스킬 사용 시 적용 */
+	private void setHeal(Unit unit) {
+		for (Player p : pList) {
+			p.curhp += p.maxhp / 2;
+			if (p.curhp > p.maxhp) p.curhp = p.maxhp;
+		}
+		unit.isHeal = false;
+	}
+
 }

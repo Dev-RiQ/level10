@@ -8,9 +8,7 @@ public class Player extends Unit {
 
 	@Override
 	void skill() {
-		// TODO Auto-generated method stub
-		
+
 	}
 
-	
 }
