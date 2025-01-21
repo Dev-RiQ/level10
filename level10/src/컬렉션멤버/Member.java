@@ -1,6 +1,6 @@
 package 컬렉션멤버;
 
-public class Member implements Comparable<Member> {
+public class Member{
 	private String id;
 	private String pw;
 	private String name;
@@ -30,12 +30,6 @@ public class Member implements Comparable<Member> {
 	@Override
 	public String toString() {
 		return "[ID = " + id + ", \t PW = " + pw + ", \t name = " + name + "]";
-	}
-	@Override
-	public int compareTo(Member o) {
-		if(name.equals(o.name))
-			return id.compareTo(o.id);
-		return name.compareTo(o.name);
 	}
 	
 }

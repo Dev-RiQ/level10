@@ -3,6 +3,8 @@ package 컬렉션멤버;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class MemberDAO {
 
@@ -39,7 +41,7 @@ public class MemberDAO {
 				return i;
 		return -1;
 	}
-	public boolean isMatchPw(String id, String pw) {
+	public boolean isMatchPw(String id, String pw) {	
 		if(memberList.get(getIdx(id)).getPw().equals(pw))
 			return true;
 		return false;
@@ -56,8 +58,14 @@ public class MemberDAO {
 		memberList.remove(getIdx(id));
 	}
 	public void printMember() {
-		Collections.sort(memberList,new MemberComp(MemberComp.SortBy.ID, MemberComp.SortDir.ASC));
+		System.out.println("=== 원본 ===");
 		for(Member member : memberList)
+			System.out.println(member);
+		Set<Member> print = new TreeSet<>(new MemberComp(MemberComp.SortBy.ID, MemberComp.SortDir.ASC));
+		for(Member member : memberList)
+			print.add(member);
+		System.out.println("=== 출력 ID순 ===");
+		for(Member member : print)
 			System.out.println(member);
 	}
 	public void updateMember(String id, String name) {
@@ -68,9 +76,15 @@ public class MemberDAO {
 	}
 	private String getData() {
 		String data = "";
-		Collections.sort(memberList,new MemberComp(MemberComp.SortBy.NAME, MemberComp.SortDir.ASC));
+		List<Member> print = new ArrayList<>();
+		print.addAll(memberList);
+		Collections.sort(print, new MemberComp(MemberComp.SortBy.NAME, MemberComp.SortDir.ASC));
+		System.out.println("=== 원본 ===");
+		for(Member member : memberList)
+			System.out.println(member);
+		System.out.println("=== 저장 이름순 ===");
 		System.out.println("==== [ 저장한 데이터 값 ] ====");
-		for(Member member : memberList) {
+		for(Member member : print) {
 			System.out.println(member);
 			data += String.format("%s/%s/%s\n", member.getId(),member.getPw(),member.getName());
 		}
